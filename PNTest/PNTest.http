@@ -1,0 +1,6 @@
+@PNTest_HostAddress = http://localhost:5137
+
+GET {{PNTest_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
