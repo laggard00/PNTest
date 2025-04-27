@@ -1,41 +1,53 @@
-var builder = WebApplication.CreateBuilder(args);
+using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
+using PNTest.BLL.Services;
+using PNTest.BLL.Services.Interfaces;
+using PNTest.BLL.Settings;
+using PNTest.DAL.Context;
+using PNTest.Middleware;
+using PNTest.SignalR;
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddDbContext<DataContext>(options =>
+            options.UseInMemoryDatabase("LocationDatabase"));
+
+builder.Services.AddSignalR();
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "PNTest API",
+        Version = "v1",
+        Description = "API for Google Places testing"
+    });
+});
+builder.Services.AddOptions<GoogleApiSettings>()
+    .Bind(builder.Configuration.GetSection(nameof(GoogleApiSettings)))
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
+builder.Services.AddHttpClient<IGoogleApiService, GoogleApiService>();
+builder.Services.AddScoped<IResponsePersistService, ResponsePersistService>();
+builder.Services.AddScoped<IRequestService, RequestService>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddDistributedMemoryCache();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+
+app.UseSwagger();
+app.UseSwaggerUI(options =>
 {
-    app.MapOpenApi();
-}
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "PNTest API v1");
+});
 
 app.UseHttpsRedirection();
+app.UseMiddleware<BasicApiKeyMiddleware>();
+app.UseMiddleware<SyncMiddlware>();
+app.UseAuthorization();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
+app.MapControllers();
+app.MapHub<RequestHub>("/incoming-requests");
 
 app.Run();
-
-internal record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
