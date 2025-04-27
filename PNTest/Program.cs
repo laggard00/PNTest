@@ -2,9 +2,12 @@ using Microsoft.OpenApi.Models;
 using PNTest.BLL.Services.Interfaces;
 using PNTest.BLL.Services;
 using PNTest.BLL.Settings;
+using Microsoft.EntityFrameworkCore;
+using PNTest.DAL.Context;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Services.AddDbContext<DataContext>(options =>
+            options.UseInMemoryDatabase("LocationDatabase"));
 
 builder.Services.AddControllers(); 
 builder.Services.AddEndpointsApiExplorer();
@@ -22,7 +25,8 @@ builder.Services.AddOptions<GoogleApiSettings>()
     .ValidateDataAnnotations()
     .ValidateOnStart();
 builder.Services.AddHttpClient<IGoogleApiService, GoogleApiService>();
-
+builder.Services.AddScoped<IResponsePersistService, ResponsePersistService>();
+builder.Services.AddScoped<IRequestPersistService, RequestPersistService>();
 var app = builder.Build();
 
 

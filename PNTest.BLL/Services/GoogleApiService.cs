@@ -21,7 +21,7 @@ namespace PNTest.BLL.Services
             _httpClient.BaseAddress = new Uri(options.Value.BaseUrl!);
         }
 
-        public async Task<object?> GetNearbyLocations(LocationRequest locationRequest)
+        public async Task<IEnumerable<LocationResponse>> GetNearbyLocations(LocationRequest locationRequest)
         {
             var locationString = string.Join(",", new[] { locationRequest.Latitude.ToString("F6", CultureInfo.InvariantCulture), locationRequest.Longitude.ToString("F6", CultureInfo.InvariantCulture) });
 

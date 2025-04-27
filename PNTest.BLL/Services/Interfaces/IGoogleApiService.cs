@@ -1,4 +1,5 @@
-﻿using PNTest.BLL.Models.RequestModel;
+﻿using PNTest.BLL.Models;
+using PNTest.BLL.Models.RequestModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,6 @@ namespace PNTest.BLL.Services.Interfaces
 {
     public interface IGoogleApiService
     {
-        Task<object?> GetNearbyLocations(LocationRequest locationRequest);
+        Task<IEnumerable<LocationResponse>> GetNearbyLocations(LocationRequest locationRequest);
     }
 }

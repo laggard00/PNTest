@@ -9,10 +9,14 @@ namespace PNTest.Controllers
     public class GooglePlacesController : ControllerBase
     {
         private readonly IGoogleApiService _googleApiService;
+        private readonly IRequestPersistService _requestPersistService;
+        private readonly IResponsePersistService _responsePersistService;
 
-        public GooglePlacesController(IGoogleApiService googleApiService)
+        public GooglePlacesController(IGoogleApiService googleApiService, IResponsePersistService responsePersistService, IRequestPersistService requestPersistService)
         {
             _googleApiService = googleApiService;
+            _responsePersistService = responsePersistService;
+            _requestPersistService = requestPersistService;
         }
 
         [HttpPost("nearby")]
@@ -21,7 +25,10 @@ namespace PNTest.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            var request = await _requestPersistService.PersistLocationRequest(locationRequest, 1);
             var result = await _googleApiService.GetNearbyLocations(locationRequest);
+            await _responsePersistService.PersistLocationResponse(request.Id, result);
+
             return Ok(result);
         }
     }

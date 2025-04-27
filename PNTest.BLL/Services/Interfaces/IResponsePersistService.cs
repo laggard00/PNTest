@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using PNTest.BLL.Models;
 
 namespace PNTest.BLL.Services.Interfaces
 {
     public interface IResponsePersistService
     {
-        Task PersistLocationResponse(int requestId, string responseJson);
+        Task PersistLocationResponse(int requestId, IEnumerable<LocationResponse> locations);
     }
 }

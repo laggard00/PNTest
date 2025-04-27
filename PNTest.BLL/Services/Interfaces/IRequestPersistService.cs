@@ -1,4 +1,5 @@
 ﻿using PNTest.BLL.Models.RequestModel;
+using PNTest.DAL.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,6 @@ namespace PNTest.BLL.Services.Interfaces
 {
     public interface IRequestPersistService
     {
-        Task PersistLocationRequest(LocationRequest locationRequest, int UserId);
+        Task<Request> PersistLocationRequest(LocationRequest locationRequest, int UserId);
     }
 }
