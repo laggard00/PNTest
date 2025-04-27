@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Options;
-using PNTest.BLL.Models;
 using PNTest.BLL.Models.RequestModel;
 using PNTest.BLL.Models.ResponseModel;
 using PNTest.BLL.Services.Interfaces;

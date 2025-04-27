@@ -1,4 +1,4 @@
-﻿using PNTest.BLL.Models;
+﻿using PNTest.BLL.Models.ResponseModel;
 
 namespace PNTest.BLL.Services.Interfaces
 {

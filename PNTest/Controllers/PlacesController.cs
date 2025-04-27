@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using PNTest.BLL.Models.RequestModel;
+using PNTest.BLL.Models.ResponseModel;
 using PNTest.BLL.Services.Interfaces;
 using PNTest.Idempotency;
 using PNTest.SignalR;
@@ -9,21 +10,24 @@ namespace PNTest.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class GooglePlacesController : ControllerBase
+    public class PlacesController : BaseController
     {
         private readonly IGoogleApiService _googleApiService;
         private readonly IRequestService _requestPersistService;
         private readonly IResponsePersistService _responsePersistService;
         private readonly IHubContext<RequestHub> _hubContext;
-        public GooglePlacesController(IGoogleApiService googleApiService,
+        private readonly ILocationService _locationService;
+        public PlacesController(IGoogleApiService googleApiService,
                                       IResponsePersistService responsePersistService,
                                       IRequestService requestPersistService,
-                                      IHubContext<RequestHub> hubContext)
+                                      IHubContext<RequestHub> hubContext,
+                                      ILocationService locationService)
         {
             _googleApiService = googleApiService;
             _responsePersistService = responsePersistService;
             _requestPersistService = requestPersistService;
             _hubContext = hubContext;
+            _locationService = locationService;
         }
 
         [HttpPost("nearby")]
@@ -33,23 +37,24 @@ namespace PNTest.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            int userId = 0; 
 
-            if (HttpContext.Items.TryGetValue("UserId", out var userIdObj) && userIdObj is int id)
-            {
-                userId = id;
-            }
-            else
-            {
-                throw new Exception("Middleware not working");
-            }
 
-         
-            var request = await _requestPersistService.SaveLocationRequest(locationRequest, userId);
+
+            var request = await _requestPersistService.SaveLocationRequest(locationRequest, UserId);
             var result = await _googleApiService.GetNearbyLocations(locationRequest);
             await _responsePersistService.PersistLocationResponse(request.Id, result);
-            await _hubContext.Clients.All.SendAsync("ReceiveNewRequest", $"New location request by  {userId}  \n lat: {locationRequest.Latitude} \n lng: {locationRequest.Longitude}");
+            await _hubContext.Clients.All.SendAsync("ReceiveNewRequest", $"New location request by  {UserId}  \n lat: {locationRequest.Latitude} \n lng: {locationRequest.Longitude}", cancellationToken);
             return Ok(result);
         }
+
+        [HttpPost("favorite")]
+        public async Task<IActionResult> AddFavoriteLocation([FromBody] FavoritePlaceRequest favoritePlaceRequest, CancellationToken cancellationToken)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            await _locationService.AddFavoriteLocation(favoritePlaceRequest.placeId, UserId);
+            return Created();
+        }
+
     }
 }

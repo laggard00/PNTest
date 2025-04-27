@@ -15,13 +15,14 @@ namespace PNTest.Middleware
 
         public async Task InvokeAsync(HttpContext context, DataContext dbContext)
         {
-            //previous basickeyapi middleware should insert userid into context
+            //hacky way to remove SignalR connection types from this semaphore
             if (context.Request.Path.ToString().Contains("/incoming-requests"))
             {
                 await _next(context);
                 return;
 
             }
+            //previous basickeyapi middleware should insert userid into context
             if (!context.Items.ContainsKey("UserId"))
             {
                 context.Response.StatusCode = 400; // Bad Request

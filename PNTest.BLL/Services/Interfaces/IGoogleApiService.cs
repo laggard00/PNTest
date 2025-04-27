@@ -1,10 +1,5 @@
-﻿using PNTest.BLL.Models;
-using PNTest.BLL.Models.RequestModel;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using PNTest.BLL.Models.RequestModel;
+using PNTest.BLL.Models.ResponseModel;
 
 namespace PNTest.BLL.Services.Interfaces
 {

@@ -1,17 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PNTest.BLL.Models;
+using PNTest.BLL.Models.ResponseModel;
 using PNTest.BLL.Services.Interfaces;
 using PNTest.DAL.Context;
 using PNTest.DAL.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PNTest.BLL.Services
 {
-    public class ResponsePersistService : IResponsePersistService
+    public sealed class ResponsePersistService : IResponsePersistService
     {
         private readonly DataContext _context;
         public ResponsePersistService(DataContext context)
@@ -51,7 +46,7 @@ namespace PNTest.BLL.Services
                     };
 
                     _context.Locations.Add(location);
-                    await _context.SaveChangesAsync(); 
+                    await _context.SaveChangesAsync();
                 }
                 else
                 {

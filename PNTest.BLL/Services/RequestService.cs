@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using PNTest.BLL.Models.RequestModel;
 using PNTest.BLL.Services.Interfaces;
 using PNTest.DAL.Context;
@@ -7,7 +6,7 @@ using PNTest.DAL.Entities;
 
 namespace PNTest.BLL.Services
 {
-    public class RequestService : IRequestService
+    public sealed class RequestService : IRequestService
     {
         private readonly DataContext _context;
         public RequestService(DataContext context)

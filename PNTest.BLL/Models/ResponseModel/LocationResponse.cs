@@ -1,4 +1,4 @@
-﻿namespace PNTest.BLL.Models
+﻿namespace PNTest.BLL.Models.ResponseModel
 {
     public class LocationResponse
     {

@@ -6,7 +6,7 @@ namespace PNTest.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class RequestsController : ControllerBase
+    public class RequestsController : BaseController
     {
         private readonly IRequestService _requestService;
 

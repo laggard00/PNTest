@@ -2,7 +2,6 @@
 
 namespace PNTest.SignalR
 {
-  
     public class RequestHub : Hub
     {
         public async Task SendNewRequestNotification(string message)
