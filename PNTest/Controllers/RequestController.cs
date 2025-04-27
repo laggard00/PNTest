@@ -15,7 +15,7 @@ namespace PNTest.Controllers
             _requestService = requestService;
         }
 
-        [HttpGet]
+        [HttpGet("requests")]
         public async Task<IActionResult> GetRequests([FromQuery] string? type, [FromQuery] string? search)
         {
             var requests = await _requestService.GetRequests(type, search);

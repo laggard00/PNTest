@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using PNTest.BLL.Models.RequestModel;
 using PNTest.BLL.Services.Interfaces;
 using PNTest.Idempotency;
+using PNTest.SignalR;
 
 namespace PNTest.Controllers
 {
@@ -12,19 +14,21 @@ namespace PNTest.Controllers
         private readonly IGoogleApiService _googleApiService;
         private readonly IRequestService _requestPersistService;
         private readonly IResponsePersistService _responsePersistService;
-
+        private readonly IHubContext<RequestHub> _hubContext;
         public GooglePlacesController(IGoogleApiService googleApiService,
                                       IResponsePersistService responsePersistService,
-                                      IRequestService requestPersistService)
+                                      IRequestService requestPersistService,
+                                      IHubContext<RequestHub> hubContext)
         {
             _googleApiService = googleApiService;
             _responsePersistService = responsePersistService;
             _requestPersistService = requestPersistService;
+            _hubContext = hubContext;
         }
 
         [HttpPost("nearby")]
         [Idempotent]
-        public async Task<IActionResult> GetNearbyLocations([FromBody] LocationRequest locationRequest)
+        public async Task<IActionResult> GetNearbyLocations([FromBody] LocationRequest locationRequest, CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -44,7 +48,7 @@ namespace PNTest.Controllers
             var request = await _requestPersistService.SaveLocationRequest(locationRequest, userId);
             var result = await _googleApiService.GetNearbyLocations(locationRequest);
             await _responsePersistService.PersistLocationResponse(request.Id, result);
-
+            await _hubContext.Clients.All.SendAsync("ReceiveNewRequest", $"New location request by  {userId}  \n lat: {locationRequest.Latitude} \n lng: {locationRequest.Longitude}");
             return Ok(result);
         }
     }

@@ -5,11 +5,13 @@ using PNTest.BLL.Services.Interfaces;
 using PNTest.BLL.Settings;
 using PNTest.DAL.Context;
 using PNTest.Middleware;
+using PNTest.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<DataContext>(options =>
             options.UseInMemoryDatabase("LocationDatabase"));
 
+builder.Services.AddSignalR();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -45,7 +47,7 @@ app.UseMiddleware<BasicApiKeyMiddleware>();
 app.UseMiddleware<SyncMiddlware>();
 app.UseAuthorization();
 
-
 app.MapControllers();
+app.MapHub<RequestHub>("/incoming-requests");
 
 app.Run();
