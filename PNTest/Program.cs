@@ -1,15 +1,16 @@
-using Microsoft.OpenApi.Models;
-using PNTest.BLL.Services.Interfaces;
-using PNTest.BLL.Services;
-using PNTest.BLL.Settings;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
+using PNTest.BLL.Services;
+using PNTest.BLL.Services.Interfaces;
+using PNTest.BLL.Settings;
 using PNTest.DAL.Context;
+using PNTest.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<DataContext>(options =>
             options.UseInMemoryDatabase("LocationDatabase"));
 
-builder.Services.AddControllers(); 
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -27,6 +28,9 @@ builder.Services.AddOptions<GoogleApiSettings>()
 builder.Services.AddHttpClient<IGoogleApiService, GoogleApiService>();
 builder.Services.AddScoped<IResponsePersistService, ResponsePersistService>();
 builder.Services.AddScoped<IRequestPersistService, RequestPersistService>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddDistributedMemoryCache();
+
 var app = builder.Build();
 
 
@@ -37,10 +41,10 @@ app.UseSwaggerUI(options =>
 });
 
 app.UseHttpsRedirection();
-
+app.UseMiddleware<BasicApiKeyMiddleware>();
 app.UseAuthorization();
 
 
-app.MapControllers(); 
+app.MapControllers();
 
-app.Run(); 
+app.Run();

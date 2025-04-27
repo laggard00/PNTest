@@ -1,4 +1,5 @@
-﻿using PNTest.BLL.Models.RequestModel;
+﻿using Microsoft.AspNetCore.Http;
+using PNTest.BLL.Models.RequestModel;
 using PNTest.BLL.Services.Interfaces;
 using PNTest.DAL.Context;
 using PNTest.DAL.Entities;
@@ -11,7 +12,6 @@ namespace PNTest.BLL.Services
         public RequestPersistService(DataContext context)
         {
             _context = context;
-
         }
         public async Task<Request> PersistLocationRequest(LocationRequest locationRequest, int userId)
         {

@@ -12,7 +12,9 @@ namespace PNTest.Controllers
         private readonly IRequestPersistService _requestPersistService;
         private readonly IResponsePersistService _responsePersistService;
 
-        public GooglePlacesController(IGoogleApiService googleApiService, IResponsePersistService responsePersistService, IRequestPersistService requestPersistService)
+        public GooglePlacesController(IGoogleApiService googleApiService,
+                                      IResponsePersistService responsePersistService,
+                                      IRequestPersistService requestPersistService)
         {
             _googleApiService = googleApiService;
             _responsePersistService = responsePersistService;
@@ -25,7 +27,19 @@ namespace PNTest.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var request = await _requestPersistService.PersistLocationRequest(locationRequest, 1);
+            int userId = 0; 
+
+            if (HttpContext.Items.TryGetValue("UserId", out var userIdObj) && userIdObj is int id)
+            {
+                userId = id;
+            }
+            else
+            {
+                throw new Exception("Middleware not working");
+            }
+
+         
+            var request = await _requestPersistService.PersistLocationRequest(locationRequest, userId);
             var result = await _googleApiService.GetNearbyLocations(locationRequest);
             await _responsePersistService.PersistLocationResponse(request.Id, result);
 
