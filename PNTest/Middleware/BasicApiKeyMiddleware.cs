@@ -37,9 +37,7 @@ namespace PNTest.Middleware
                 await context.Response.WriteAsJsonAsync(new { message = "Invalid API key" });
                 return;
             }
-            context.Items["UserId"] = user.Id;            await _next(context);
-            context.Items["UserId"] = 1;
-
+            context.Items["UserId"] = user.Id;           
             await _next(context);
         }
     }
