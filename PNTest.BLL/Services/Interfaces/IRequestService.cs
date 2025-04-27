@@ -8,8 +8,9 @@ using System.Threading.Tasks;
 
 namespace PNTest.BLL.Services.Interfaces
 {
-    public interface IRequestPersistService
+    public interface IRequestService
     {
-        Task<Request> PersistLocationRequest(LocationRequest locationRequest, int UserId);
+        Task<Request> SaveLocationRequest(LocationRequest locationRequest, int userId);
+        Task<IEnumerable<Request>> GetRequests(string? type, string? search);
     }
 }

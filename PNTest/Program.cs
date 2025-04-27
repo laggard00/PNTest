@@ -27,7 +27,7 @@ builder.Services.AddOptions<GoogleApiSettings>()
     .ValidateOnStart();
 builder.Services.AddHttpClient<IGoogleApiService, GoogleApiService>();
 builder.Services.AddScoped<IResponsePersistService, ResponsePersistService>();
-builder.Services.AddScoped<IRequestPersistService, RequestPersistService>();
+builder.Services.AddScoped<IRequestService, RequestService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddDistributedMemoryCache();
 

@@ -10,12 +10,12 @@ namespace PNTest.Controllers
     public class GooglePlacesController : ControllerBase
     {
         private readonly IGoogleApiService _googleApiService;
-        private readonly IRequestPersistService _requestPersistService;
+        private readonly IRequestService _requestPersistService;
         private readonly IResponsePersistService _responsePersistService;
 
         public GooglePlacesController(IGoogleApiService googleApiService,
                                       IResponsePersistService responsePersistService,
-                                      IRequestPersistService requestPersistService)
+                                      IRequestService requestPersistService)
         {
             _googleApiService = googleApiService;
             _responsePersistService = responsePersistService;
@@ -41,7 +41,7 @@ namespace PNTest.Controllers
             }
 
          
-            var request = await _requestPersistService.PersistLocationRequest(locationRequest, userId);
+            var request = await _requestPersistService.SaveLocationRequest(locationRequest, userId);
             var result = await _googleApiService.GetNearbyLocations(locationRequest);
             await _responsePersistService.PersistLocationResponse(request.Id, result);
 
