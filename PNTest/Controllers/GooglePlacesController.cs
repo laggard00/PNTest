@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PNTest.BLL.Models.RequestModel;
 using PNTest.BLL.Services.Interfaces;
+using PNTest.Idempotency;
 
 namespace PNTest.Controllers
 {
@@ -22,6 +23,7 @@ namespace PNTest.Controllers
         }
 
         [HttpPost("nearby")]
+        [Idempotent]
         public async Task<IActionResult> GetNearbyLocations([FromBody] LocationRequest locationRequest)
         {
             if (!ModelState.IsValid)

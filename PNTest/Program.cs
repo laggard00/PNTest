@@ -42,6 +42,7 @@ app.UseSwaggerUI(options =>
 
 app.UseHttpsRedirection();
 app.UseMiddleware<BasicApiKeyMiddleware>();
+app.UseMiddleware<SyncMiddlware>();
 app.UseAuthorization();
 
 
