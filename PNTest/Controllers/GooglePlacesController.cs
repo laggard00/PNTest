@@ -16,7 +16,7 @@ namespace PNTest.Controllers
         }
 
         [HttpPost("nearby")]
-        public async Task<IActionResult> GetNearbyLocations([FromBody] LocationRequestModel locationRequest)
+        public async Task<IActionResult> GetNearbyLocations([FromBody] LocationRequest locationRequest)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

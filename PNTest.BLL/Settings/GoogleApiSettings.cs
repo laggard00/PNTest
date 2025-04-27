@@ -1,8 +1,12 @@
-﻿namespace PNTest.BLL.Settings
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace PNTest.BLL.Settings
 {
     public class GoogleApiSettings
     {
-        public string? ApiKey { get; init; }
-        public string? BaseUrl { get; init; }
+        [Required]
+        public required string ApiKey { get; init; }
+        [Required]
+        public required string BaseUrl { get; init; }
     }
 }

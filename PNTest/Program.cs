@@ -1,14 +1,12 @@
 using Microsoft.OpenApi.Models;
-using PNTest.BLL.Services;
 using PNTest.BLL.Services.Interfaces;
+using PNTest.BLL.Services;
+using PNTest.BLL.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
-builder.Services.AddHttpClient<IGoogleApiService, GoogleApiService>();
 
+builder.Services.AddControllers(); 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -19,18 +17,26 @@ builder.Services.AddSwaggerGen(options =>
         Description = "API for Google Places testing"
     });
 });
+builder.Services.AddOptions<GoogleApiSettings>()
+    .Bind(builder.Configuration.GetSection(nameof(GoogleApiSettings)))
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
+builder.Services.AddHttpClient<IGoogleApiService, GoogleApiService>();
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+
+app.UseSwagger();
+app.UseSwaggerUI(options =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "PNTest API v1");
-    });
-}
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "PNTest API v1");
+});
 
 app.UseHttpsRedirection();
 
+app.UseAuthorization();
 
+
+app.MapControllers(); 
+
+app.Run(); 

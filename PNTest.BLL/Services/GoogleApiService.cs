@@ -1,7 +1,10 @@
 ﻿using Microsoft.Extensions.Options;
+using PNTest.BLL.Models;
 using PNTest.BLL.Models.RequestModel;
+using PNTest.BLL.Models.ResponseModel;
 using PNTest.BLL.Services.Interfaces;
 using PNTest.BLL.Settings;
+using System.Globalization;
 using System.Net.Http.Json;
 
 namespace PNTest.BLL.Services
@@ -18,14 +21,40 @@ namespace PNTest.BLL.Services
             _httpClient.BaseAddress = new Uri(options.Value.BaseUrl!);
         }
 
-        public async Task<object?> GetNearbyLocations(LocationRequestModel locationRequest)
+        public async Task<object?> GetNearbyLocations(LocationRequest locationRequest)
         {
-            var locationString = string.Join(',', new[] { locationRequest.Latitude, locationRequest.Longitude });
+            var locationString = string.Join(",", new[] { locationRequest.Latitude.ToString("F6", CultureInfo.InvariantCulture), locationRequest.Longitude.ToString("F6", CultureInfo.InvariantCulture) });
 
-            var response = await _httpClient.GetAsync($"maps/api/place/nearbysearch/json?location={locationString}&radius={_radius}&key={_options.ApiKey}");
+
+            var response = await _httpClient.GetAsync($"maps/api/place/nearbysearch/json?location={locationString}&radius={_radius}&type={locationRequest.Type}&key={_options.ApiKey}");
             response.EnsureSuccessStatusCode();
-            var data = await response.Content.ReadFromJsonAsync<object>();
-            return data;
+            var data = await response.Content.ReadFromJsonAsync<GoogleResponse?>();
+            var transformedData = TransformGoogleResponse(data);
+            return transformedData;
+        }
+
+        private IEnumerable<LocationResponse> TransformGoogleResponse(GoogleResponse? googleResponse)
+        {
+            List<LocationResponse> locations = new();
+            if (googleResponse != null)
+            {
+
+                foreach (var location in googleResponse.results)
+                {
+                    locations.Add(new LocationResponse()
+                    {
+                        PlaceId = location.place_id,
+                        LocationName = location.name,
+                        LocationType = string.Join(",", location.types),
+                        Address = location.vicinity,
+                        Longitude = location.geometry.location.lng,
+                        Latitude = location.geometry.location.lat,
+
+                    });
+                }
+            }
+            return locations;
+
         }
     }
 }

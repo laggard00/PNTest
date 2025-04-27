@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace PNTest.BLL.Services.Interfaces
 {
-    public interface IGoogleApiService
+    public interface IRequestPersistService
     {
-        Task<object?> GetNearbyLocations(LocationRequest locationRequest);
+        Task PersistLocationRequest(LocationRequest locationRequest, int UserId);
     }
 }
